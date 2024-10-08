@@ -1,9 +1,8 @@
+import Body from "./Components/Body";
+import Header from "./Components/Header";
+
 function App() {
-  return (
-    <h1 className="text-3xl text-cyan-600">
-      We are going to build netflix project
-    </h1>
-  );
+  return <Body />;
 }
 
 export default App;
