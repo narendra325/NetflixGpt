@@ -1,12 +1,75 @@
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 import Header from "./Header";
+import { Validate } from "../Utils/Validate";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../Utils/Firebase";
 
 const Login = () => {
+  const email = useRef(null);
+  const password = useRef(null);
+  const name = useRef(null);
+  const confirmpassword = useRef(null);
+
   const [isSignin, setSignin] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  const handlesubmit = (e) => {
+    e.preventDefault();
+    console.log("wfg");
+
+    const emailvalue = email.current.value;
+    const passwordvalue = password.current.value;
+    
+
+    console.log(emailvalue);
+    console.log(passwordvalue);
+   
+
+    setErrorMessage(null);
+
+    let message = Validate(emailvalue, passwordvalue);
+
+    setErrorMessage(message);
+    if (message) return;
+
+    if (!isSignin) {
+      // signup
+
+      createUserWithEmailAndPassword(auth, emailvalue, passwordvalue)
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          console.log(user);
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
+    } else {
+      signInWithEmailAndPassword(auth, emailvalue, passwordvalue)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log(user)
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
+    }
+  };
 
   const handleSignin = () => {
     setSignin(!isSignin);
   };
+
   return (
     <div>
       <Header />
@@ -22,34 +85,36 @@ const Login = () => {
         </h1>
         {!isSignin && (
           <input
+            ref={name}
             type="text"
-            className="p-2 my-2 w-full rounded-lg  bg-gray-800 bg-opacity-80 "
+            className="p-2 my-2 w-full rounded-lg bg-gray-800 bg-opacity-80"
             placeholder="Name"
           />
         )}
         <input
+          ref={email}
           type="text"
-          className="p-2 my-2 w-full rounded-lg  bg-gray-800 bg-opacity-80 "
+          className="p-2 my-2 w-full rounded-lg bg-gray-800 bg-opacity-80"
           placeholder="Email-address"
         />
         <input
-          type="Password"
-          className="p-2 my-2 w-full rounded-lg bg-gray-800 bg-opacity-80 "
-          placeholder={!isSignin? "Create password":"Password"}
+          ref={password}
+          type="password"
+          className="p-2 my-2 w-full rounded-lg bg-gray-800 bg-opacity-80"
+          placeholder={!isSignin ? "Create password" : "Password"}
         />
-        {!isSignin &&(
-            <input
-            type="password"
-            className="p-2 my-2 w-full rounded-lg  bg-gray-800 bg-opacity-80 "
-            placeholder="Confirm password"
-          />
-        )}
 
-        <button className="p-2 my-4 bg-red-600 w-full rounded-lg ">
+        {errorMessage && (
+          <p className="text-red-500 font-bold text-md py-3">{errorMessage}</p>
+        )}
+        <button
+          onClick={handlesubmit}
+          className="p-2 my-4 bg-red-600 w-full rounded-lg"
+        >
           {isSignin ? "Sign in" : "Sign up"}
         </button>
         <div>
-          <p className=" p-2 my-2 cursor-pointer" onClick={handleSignin}>
+          <p className="p-2 my-2 cursor-pointer" onClick={handleSignin}>
             {isSignin ? " New to Netflix? Sign up" : "Already user? Sign in"}
           </p>
         </div>
