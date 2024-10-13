@@ -8,12 +8,13 @@ import {
 } from "firebase/auth";
 import { auth } from "../Utils/Firebase";
 import { addUser } from "../Utils/UserSlice";
-import { useNavigate } from "react-router-dom";
+
 import { useDispatch } from "react-redux";
+import { BACKGROUND_IMG } from "../Utils/Constants";
 
 const Login = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  
   const email = useRef(null);
   const password = useRef(null);
   const name = useRef(null);
@@ -23,14 +24,11 @@ const Login = () => {
 
   const handlesubmit = (e) => {
     e.preventDefault();
-    console.log("wfg");
+    
 
     const emailvalue = email.current.value;
     const passwordvalue = password.current.value;
     const namevalue = isSignin ? " " : name.current.value;
-
-    console.log(emailvalue);
-    console.log(passwordvalue);
 
     setErrorMessage(null);
 
@@ -59,7 +57,6 @@ const Login = () => {
                   displayName: displayName,
                 })
               );
-              navigate("/browse");
             })
             .catch((error) => {
               setErrorMessage(error.message);
@@ -88,8 +85,6 @@ const Login = () => {
               })
             );
           });
-
-          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -108,7 +103,7 @@ const Login = () => {
       <Header />
       <div className="absolute">
         <img
-          src="https://assets.nflxext.com/ffe/siteui/vlv3/4d2c5849-b306-4884-9036-6211f7ee0178/web/IN-en-20240930-TRIFECTA-perspective_1e1ca6cd-9e2d-4e9d-9e4b-ba0c2d3a0e31_large.jpg"
+          src={BACKGROUND_IMG}
           alt="background-img"
         />
       </div>
